@@ -1,5 +1,5 @@
 ## Ignore Visual Studio temporary files, build results, and
-output
-output/
+asset
+asset/
 .vscode
 .vscode/
