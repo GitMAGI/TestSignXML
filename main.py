@@ -1,45 +1,33 @@
-from lxml import etree
-from base64 import b64decode
-from signxml import XMLVerifier
 import os
+import test01
+import time
 
 path_asset = "asset"
-#certificate_filename = "cert.pem"
-#private_key_filename = "key.pem"
+path_input = "Input"
+path_output = "Output"
+path_cap_certificate = "CAPCertificate"
+path_personal_certificate = ""
+certificate_filename = "cert.pem"
+private_key_filename = "key.pem"
 
 file_to_analize = "esempio_2019_05_04.cap"
 #file_to_analize = "esempio_2019_05_04_edit.cap"
 
-fh = open(os.path.join(path_asset, file_to_analize), 'rb')
-xmlDoc = etree.parse(fh)
-fh.close()
+#file_to_analize_fullname = os.path.join(path_asset, path_output, file_to_analize)
+file_to_analize_fullname = os.path.join("/", "Workspace", "TFS", "GenericPurposesSolution", "CA_Crypto", "asset", "Output", file_to_analize)
 
-namespaces = {'ds': 'http://www.w3.org/2000/09/xmldsig#'}
-cert_node = xmlDoc.find("//ds:X509Certificate", namespaces)
-cert = cert_node.text
+certificate_full_filename = os.path.join(path_asset, path_cap_certificate, certificate_filename)
+private_key_full_filename = os.path.join(path_asset, path_cap_certificate, private_key_filename)
 
-#print(cert)
-verified = False
-try:
-    verified_result = XMLVerifier().verify(xmlDoc, x509_cert = cert)
-    verified = True
-except:
-    verified = False
+file_to_sign = "esempio_2019_05_04_unsigned.cap"
+#file_to_sign_fullname = os.path.join(path_asset, path_input, file_to_sign)
+file_to_sign_fullname = os.path.join("/", "Workspace", "TFS", "GenericPurposesSolution", "CA_Crypto", "asset", "Input", file_to_sign)
 
-if verified:
-    # What are Whole Data have been signed
-    verified_data = verified_result.signed_data
+file_signed = os.path.splitext(file_to_sign)[0] + "_" + "signed" + "_" + time.strftime("%Y%m%d_%H%M%S") + os.path.splitext(file_to_sign)[1]
+file_signed_fullname = os.path.join(path_asset, path_output, file_signed)
 
-    # Whole Signed Data as XML
-    verified_xml = verified_result.signed_xml
+test01.TestSign(file_to_sign_fullname, certificate_full_filename, private_key_full_filename, file_signed_fullname)
 
-    # Signed Signature Only XML Element as XML
-    verified_signature_xml = verified_result.signature_xml
+test01.TestVerify(file_signed_fullname)
 
-    print("XML Verified")
-
-    #print(verified_data)
-    print(verified_xml)
-    print(verified_signature_xml)
-else:
-    print("XML NOT Verified")
+#test01.TestVerify(file_to_analize_fullname)

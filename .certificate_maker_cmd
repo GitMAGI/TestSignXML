@@ -1,0 +1,14 @@
+﻿# Create a New Private RSA with 2048 bit Key and a Public Certificate lasting 365 days
+openssl req -x509 -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem
+# During the creation we used the PEM phrase xxxxxxxxxx
+
+# Create a PFX file in which both the Private RSA key and the Certificate PEM created before will be joined in just one File to keep Secret!
+openssl pkcs12 -export -in cert.pem -inkey key.pem -out cert_key.pfx
+# During the creation you will be asked the PEM phrase created at the previous step
+# Furthermore you will be asked to Protect the PFX file with a password. We used XXXXXXX
+
+# Once the pfxfile has been generated, we can delete the cert.pem and key.pem files.
+# The next step we need to perform is the generation of the public certificate. (The output file of this step is quite equal to the cert.pem generated in the step 1)
+# This certificate must be shared with the remote clients and entity in order to successfully create communications.
+openssl pkcs12 -in cert_key.pfx -clcerts -nokeys -out cert_public.pem
+# During the Public Certificate creation you will be asked the PFX password we created at the previous step
